@@ -229,6 +229,14 @@ static NSString *const kDayOfWeekSaturday = @"SA";
     NSString *weekNumberString = [NSString stringWithFormat:@"%li", (long)components.weekOfYear];
     NSString *monthString = [NSString stringWithFormat:@"%li", (long)components.month];
 
+   
+        if( !self.recurrenceRules.repeatRulesByDayOfMonth && !self.recurrenceRules.repeatRulesByDay && !self.recurrenceRules.repeatRulesByDayOfYear && !self.recurrenceRules.repeatRulesByHour && !self.recurrenceRules.repeatRulesByMonth &&  !self.recurrenceRules.repeatRulesByMinute && !self.recurrenceRules.repeatRulesBySecond) {
+            // TODO: Test all case
+             NSDateComponents *components = [self.calendar components:dateAndWeekdayComponents fromDate:self.eventStartDate];
+            self.recurrenceRules.repeatRulesByDayOfMonth = @[[NSString stringWithFormat:@"%li", (long)components.day]];
+        }
+    
+    
     // If the event is set to repeat on a certain day of the week,
     // it MUST be the current date's weekday for it to occur
     if (self.recurrenceRules.repeatRulesByDay &&
@@ -374,13 +382,11 @@ static NSString *const kDayOfWeekSaturday = @"SA";
             }
         } else {
             
-            NSInteger difference = [self.calendar components:NSCalendarUnitMonth fromDate:self.eventStartDate toDate:date options:0].month + 1;
+            NSInteger difference = [self.calendar components:NSCalendarUnitDay fromDate:self.eventStartDate toDate:date options:0].day + 1;
             
             if (difference % self.recurrenceRules.repeatRuleInterval) {
-                
                 return NO;
             } else {
-                
                 return ![self exceptionOnDate:date];
             }
         }
